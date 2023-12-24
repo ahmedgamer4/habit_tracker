@@ -4,6 +4,7 @@ export default {
   strict: true,
   driver: 'better-sqlite',
   schema: './src/_schema/*',
+  out: './drizzle',
   dbCredentials: {
     url: './store.db',
   },
