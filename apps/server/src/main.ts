@@ -12,7 +12,7 @@ async function bootstrap() {
     .build();
 
   app.setGlobalPrefix('/api/v1', { exclude: ['/'] });
-  // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('documentation', app, document);

@@ -5,6 +5,7 @@ import { GlobalModule } from './global/global.module';
 import { ConfigModule } from '@nestjs/config';
 import { DBConfig } from './config';
 import { UsersModule } from './users/users.module';
+import { ActivitiesModule } from './activities/activities.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
       load: [DBConfig],
     }),
     UsersModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
