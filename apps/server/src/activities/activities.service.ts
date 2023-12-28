@@ -68,4 +68,17 @@ export class ActivitiesService {
       throw new InternalServerErrorException(`Cannot delete activity. ${e}`);
     }
   }
+
+  async checkIfCreator(userId: number, activityId: number) {
+    try {
+      const res = await this.db
+        .select()
+        .from(activity)
+        .where(eq(activity.id, activityId));
+
+      return res[0].userId === userId;
+    } catch (e) {
+      throw new InternalServerErrorException(`Cannot find activity. ${e}`);
+    }
+  }
 }
