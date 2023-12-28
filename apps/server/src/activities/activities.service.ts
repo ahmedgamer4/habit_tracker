@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-user.dto';
+import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { DB, DBType } from 'src/global/providers/db.provider';
 import { eq, sql } from 'drizzle-orm';
@@ -28,11 +28,11 @@ export class ActivitiesService {
     }
   }
 
-  async create(createActivityDto: CreateActivityDto) {
+  async create(createActivityDto: CreateActivityDto, userId: number) {
     try {
       const res = await this.db
         .insert(activity)
-        .values(createActivityDto)
+        .values({ ...createActivityDto, userId })
         .returning({
           id: sql<number>`id`,
         });

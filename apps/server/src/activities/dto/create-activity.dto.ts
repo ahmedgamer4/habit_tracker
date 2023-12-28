@@ -23,8 +23,4 @@ export class CreateActivityDto {
   @Length(7)
   @IsString()
   colorCode: string;
-
-  @ApiProperty()
-  @IsNumber()
-  userId: number;
 }

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-user.dto';
+import { UpdateActivityDto } from './dto/update-activity.dto';
 import { ok } from 'src/utils/response.util';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import JWTGuard from 'src/auth/guards/jwt.guard';
@@ -27,14 +27,17 @@ export class ActivitiesController {
 
   @Post()
   @ApiCreatedResponse()
-  async create(@Body() createActivityDto: CreateActivityDto) {
-    const data = await this.activitiesService.create(createActivityDto);
+  async create(@Body() createActivityDto: CreateActivityDto, @Req() req: any) {
+    const data = await this.activitiesService.create(
+      createActivityDto,
+      req.user.sub,
+    );
     return ok('created activity successfully', data, true);
   }
 
-  @Get(':userId')
-  async findAll(@Param('userId', ParseIntPipe) userId: number) {
-    const data = await this.activitiesService.findAll(userId);
+  @Get()
+  async findAll(@Req() req: any) {
+    const data = await this.activitiesService.findAll(req.user.sub);
     return ok('Found activities successfully', data);
   }
 
