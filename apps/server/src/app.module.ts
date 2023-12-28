@@ -7,6 +7,7 @@ import { DBConfig, JWTConfig } from './config';
 import { UsersModule } from './users/users.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { AuthModule } from './auth/auth.module';
+import { ActivityLogsModule } from './activityLogs/activityLogs.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     ActivitiesModule,
     AuthModule,
+    ActivityLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
