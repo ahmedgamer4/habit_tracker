@@ -9,6 +9,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Habit Tracker API Docs')
+    .addBearerAuth()
     .build();
 
   app.setGlobalPrefix('/api/v1', { exclude: ['/'] });

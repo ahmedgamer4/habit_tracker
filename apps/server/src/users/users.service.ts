@@ -6,6 +6,7 @@ import { DB, DBType } from 'src/global/providers/db.provider';
 import { user } from 'src/_schema/user';
 import { eq, sql } from 'drizzle-orm';
 import { InternalServerErrorException } from '@nestjs/common/exceptions';
+import { hashPassword } from '../utils/password.util';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const hashed = createUserDto.password;
+      const hashed = hashPassword(createUserDto.password);
 
       const res = await this.db
         .insert(user)
@@ -76,7 +77,14 @@ export class UsersService {
   async findByEmail(email: string) {
     try {
       const resUser = await this.db
-        .select()
+        .select({
+          id: sql<number>`id`,
+          name: sql<string>`name`,
+          email: sql<string>`email`,
+          password: sql<string>`password`,
+          emailVerified: sql<string>`email_verified`,
+          image: sql<string>`image`,
+        })
         .from(user)
         .where(eq(user.email, email));
       return resUser[0];
