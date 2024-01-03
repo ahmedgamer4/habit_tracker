@@ -3,9 +3,10 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { DB, DBType } from 'src/global/providers/db.provider';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, gte, lte, sql } from 'drizzle-orm';
 import { InternalServerErrorException } from '@nestjs/common/exceptions';
-import { activity } from 'src/_schema/activity';
+import { Activity, activity } from 'src/_schema/activity';
+import { activityLog } from 'src/_schema/activityLog';
 
 @Injectable()
 export class ActivitiesService {
@@ -14,14 +15,41 @@ export class ActivitiesService {
   async findAll(userId: number) {
     try {
       const res = await this.db
-        .select({
-          id: sql<number>`id`,
+        .selectDistinct({
+          id: sql<number>`activity.id`,
           name: sql<string>`name`,
           description: sql<string>`description`,
           colorCode: sql<string>`color_code`,
         })
         .from(activity)
         .where(eq(activity.userId, userId));
+      return res;
+    } catch (e) {
+      throw new InternalServerErrorException(`Cannot find activities. ${e}`);
+    }
+  }
+
+  async findWithDateRange(
+    userId: number,
+    dateRange: { from: string; to: string },
+  ) {
+    try {
+      const res = await this.db
+        .selectDistinct({
+          id: sql<number>`activity.id`,
+          name: sql<string>`name`,
+          description: sql<string>`description`,
+          colorCode: sql<string>`color_code`,
+        })
+        .from(activity)
+        .leftJoin(activityLog, eq(activityLog.activityId, activity.id))
+        .where(
+          and(
+            eq(activity.userId, userId),
+            gte(activityLog.date, dateRange.from),
+            lte(activityLog.date, dateRange.to),
+          ),
+        );
       return res;
     } catch (e) {
       throw new InternalServerErrorException(`Cannot find activities. ${e}`);
@@ -79,6 +107,33 @@ export class ActivitiesService {
       return res[0].userId === userId;
     } catch (e) {
       throw new InternalServerErrorException(`Cannot find activity. ${e}`);
+    }
+  }
+
+  async getMostLogged(userId: number) {
+    try {
+      const activitiesWithLogsCount = this.db.all<
+        Activity & { no_logs: number }
+      >(sql`select DISTINCT 
+a.*,
+	COUNT(a.id) as logs_num
+from
+	activity a
+left join activity_log al on
+	a.id = al.activity_id
+where
+	a.user_id = ${userId}
+GROUP BY
+	a.id
+order by
+	logs_num desc`);
+      return {
+        activityName: activitiesWithLogsCount[0].name,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException(
+        `Cannot get the most logged activity. ${e}`,
+      );
     }
   }
 }
