@@ -10,12 +10,14 @@ import {
   UnauthorizedException,
   UseGuards,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { ActivityLogsService } from './activityLogs.service';
 import { CreateActivityLogDto } from './dto/create-activityLog.dto';
 import { ok } from 'src/utils/response.util';
 import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import JWTGuard from 'src/auth/guards/jwt.guard';
+import FindLogsQueryDto from './dto/find-activities-query.dto';
 
 @UseGuards(JWTGuard)
 @ApiBearerAuth()
@@ -39,8 +41,15 @@ export class ActivityLogsController {
   }
 
   @Get()
-  async findAll(@Param('activityId', ParseIntPipe) activityId: number) {
-    const data = await this.activityLogsService.findAll(activityId);
+  async findAll(
+    @Param('activityId', ParseIntPipe) activityId: number,
+    @Query() query: FindLogsQueryDto,
+  ) {
+    const data = await this.activityLogsService.findAll(
+      activityId,
+      query.type,
+      { from: query.from, to: query.to },
+    );
     return ok('Found activity logs successfully', data);
   }
 
@@ -55,5 +64,17 @@ export class ActivityLogsController {
 
     const data = await this.activityLogsService.delete(id);
     return ok('Deleted activity log successfully', data);
+  }
+
+  @Get('/getStreak')
+  async getStreak(
+    @Param('activityId', ParseIntPipe) activityId: number,
+    @Query() query: FindLogsQueryDto,
+  ) {
+    const data = await this.activityLogsService.getStreak(
+      activityId,
+      query.type,
+    );
+    return ok('Found activity logs successfully', data);
   }
 }
