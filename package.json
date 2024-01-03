@@ -14,5 +14,9 @@
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5",
+    "web": "^0.0.2"
   }
 }
