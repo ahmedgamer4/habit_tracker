@@ -6,6 +6,6 @@ export const session = sqliteTable('session', {
   sessionToken: text('session_token').notNull(),
   userId: integer('user_id')
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, {}),
   expires: text('expires').notNull(),
 });

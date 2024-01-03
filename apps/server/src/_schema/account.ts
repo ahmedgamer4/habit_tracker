@@ -6,7 +6,10 @@ export const account = sqliteTable('account', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   userId: integer('user_id')
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+    }),
   type: text('name', { length: 100 }).notNull(),
   refreshToken: text('refresh_token'),
   accessToken: text('access_token'),

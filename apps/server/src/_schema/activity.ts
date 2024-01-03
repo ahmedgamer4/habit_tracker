@@ -8,7 +8,7 @@ export const activity = sqliteTable('activity', {
   description: text('description'),
   userId: integer('user_id')
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   colorCode: text('color_code', { length: 7 }),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`),
